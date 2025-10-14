@@ -1,6 +1,12 @@
 # VSCode CILogon Kubernetes Connector
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Go Version](https://img.shields.io/badge/Go-1.21+-blue.svg)](https://golang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-4.9+-blue.svg)](https://www.typescriptlang.org/)
+
 A secure, kubeconfig-free solution for connecting VS Code to JupyterHub-managed Kubernetes pods via CILogon authentication.
+
+**Repository:** https://github.com/kondratyevd/purdue-af-vscode
 
 ## Architecture Overview
 
@@ -25,8 +31,8 @@ Kubernetes Cluster + JupyterHub
 
 1. **Clone and build:**
    ```bash
-   git clone <repository-url>
-   cd vscode-k8s-connector
+   git clone https://github.com/kondratyevd/purdue-af-vscode.git
+   cd purdue-af-vscode
    cd broker
    go mod download
    go build -o bin/broker ./cmd/broker
