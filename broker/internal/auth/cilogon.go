@@ -229,7 +229,8 @@ func generateState() string {
 }
 
 func (p *CILogonProvider) buildAuthURL(codeChallenge, state string) (string, error) {
-	u, err := url.Parse(p.issuer + "/oauth2/authorize")
+	// CILogon uses /authorize instead of /oauth2/authorize
+	u, err := url.Parse(p.issuer + "/authorize")
 	if err != nil {
 		return "", err
 	}
@@ -238,10 +239,13 @@ func (p *CILogonProvider) buildAuthURL(codeChallenge, state string) (string, err
 	q.Set("response_type", "code")
 	q.Set("client_id", p.clientID)
 	q.Set("redirect_uri", p.redirectURL)
-	q.Set("scope", "openid email profile")
+	q.Set("scope", "openid email org.cilogon.userinfo profile")
 	q.Set("state", state)
 	q.Set("code_challenge", codeChallenge)
 	q.Set("code_challenge_method", codeChallengeMethod)
+	
+	// Add CILogon-specific selected_idp parameter
+	q.Set("selected_idp", "https://cern.ch/login,https://idp.fnal.gov/idp/shibboleth,https://idp.purdue.edu/idp/shibboleth")
 
 	u.RawQuery = q.Encode()
 	return u.String(), nil

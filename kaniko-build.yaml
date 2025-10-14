@@ -17,7 +17,7 @@ spec:
         - --context=git://github.com/kondratyevd/purdue-af-vscode.git
         - --context-sub-path=broker
         - --destination=geddes-registry.rcac.purdue.edu/cms/purdue-af-broker:latest
-        - --destination=geddes-registry.rcac.purdue.edu/cms/purdue-af-broker:v1.0.0
+        - --destination=geddes-registry.rcac.purdue.edu/cms/purdue-af-broker:v1.0.1
         - --cache=true
         - --cache-repo=geddes-registry.rcac.purdue.edu/cms/purdue-af-broker-cache
         - --compressed-caching=false

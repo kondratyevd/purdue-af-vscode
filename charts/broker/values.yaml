@@ -4,7 +4,7 @@ replicaCount: 2
 image:
   repository: "geddes-registry.rcac.purdue.edu/cms/purdue-af-broker"
   pullPolicy: IfNotPresent
-  tag: "v1.0.0"
+  tag: "v1.0.1"
 
 imagePullSecrets:
   - name: docker-config
@@ -81,8 +81,8 @@ config:
 auth:
   oidc:
     issuer: "https://cilogon.org"
-    clientSecretName: "auth-secret"  # Reuse existing JupyterHub CILogon secret
-    redirectURL: "https://purdue-af-broker.rcac.purdue.edu/auth/callback"
+    clientSecretName: "auth-secret-temp-from-cms"  # TEMPORARY: Copy of auth-secret from cms namespace
+    redirectURL: "https://cms.geddes.rcac.purdue.edu/hub/oauth_callback"
 
 # JupyterHub configuration
 jupyterhub:
