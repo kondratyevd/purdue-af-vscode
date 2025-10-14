@@ -2,11 +2,12 @@
 replicaCount: 2
 
 image:
-  repository: ""
+  repository: "geddes-registry.rcac.purdue.edu/cms/broker"
   pullPolicy: IfNotPresent
-  tag: ""
+  tag: "v1.0.0"
 
-imagePullSecrets: []
+imagePullSecrets:
+  - name: geddes-registry-secret
 nameOverride: ""
 fullnameOverride: ""
 

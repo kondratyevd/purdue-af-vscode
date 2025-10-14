@@ -36,7 +36,51 @@ This guide provides step-by-step instructions for deploying the VSCode CILogon K
         https://your-jupyterhub.com/hub/api/users
    ```
 
-## Step 3: Deploy Broker Service
+## Step 3: Build and Push Docker Image
+
+### Option A: Using Kaniko (Recommended for Kubernetes)
+
+1. **Set up registry credentials:**
+   ```bash
+   # Set environment variables
+   export REGISTRY_USERNAME="your-username"
+   export REGISTRY_PASSWORD="your-password"
+   
+   # Run the build script
+   ./build-kaniko.sh build
+   ```
+
+2. **Manual Kaniko setup:**
+   ```bash
+   # Create registry secret
+   kubectl create secret docker-registry geddes-registry-secret \
+     --docker-server=geddes-registry.rcac.purdue.edu \
+     --docker-username=YOUR_USERNAME \
+     --docker-password=YOUR_PASSWORD \
+     --docker-email="cms-dev@purdue.edu" \
+     --namespace=cms-dev
+   
+   # Apply Kaniko job
+   kubectl apply -f kaniko-build.yaml
+   
+   # Monitor build
+   kubectl logs -f job/broker-kaniko-build -n cms-dev
+   ```
+
+### Option B: Local Docker Build
+
+1. **Build locally:**
+   ```bash
+   cd broker
+   docker build -t geddes-registry.rcac.purdue.edu/cms/broker:v1.0.0 .
+   ```
+
+2. **Push to registry:**
+   ```bash
+   docker push geddes-registry.rcac.purdue.edu/cms/broker:v1.0.0
+   ```
+
+## Step 4: Deploy Broker Service
 
 1. **Create Kubernetes Secrets:**
    ```bash
@@ -44,12 +88,12 @@ This guide provides step-by-step instructions for deploying the VSCode CILogon K
    kubectl create secret generic broker-oidc-secret \
      --from-literal=client-id=YOUR_CILOGON_CLIENT_ID \
      --from-literal=client-secret=YOUR_CILOGON_CLIENT_SECRET \
-     --namespace=default
+     --namespace=cms-dev
    
    # Create JupyterHub secret
    kubectl create secret generic broker-jupyterhub-secret \
      --from-literal=api-token=YOUR_JUPYTERHUB_TOKEN \
-     --namespace=default
+     --namespace=cms-dev
    ```
 
 2. **Update Helm Values:**
@@ -78,7 +122,7 @@ This guide provides step-by-step instructions for deploying the VSCode CILogon K
 3. **Deploy with Helm:**
    ```bash
    helm install broker ./charts/broker \
-     --namespace=default \
+     --namespace=cms-dev \
      --create-namespace
    ```
 
