@@ -1,6 +1,7 @@
 import * as crypto from 'crypto';
 import * as express from 'express';
 import { Server } from 'http';
+import fetch from 'node-fetch';
 
 export interface TokenSet {
     accessToken: string;
@@ -32,7 +33,7 @@ export class OIDCClient {
         await this.startCallbackServer();
 
         // Build authorization URL
-        const authUrl = this.buildAuthUrl(codeChallenge, encodedState);
+        const authUrl = await this.buildAuthUrl(codeChallenge, encodedState);
         
         return authUrl;
     }
@@ -98,14 +99,33 @@ export class OIDCClient {
         });
     }
 
-    private async exchangeCodeForTokens(_code: string, _codeVerifier: string): Promise<TokenSet> {
-        // This would normally make an HTTP request to the broker's /auth/callback endpoint
-        // For now, return mock tokens
+    private async exchangeCodeForTokens(code: string, codeVerifier: string): Promise<TokenSet> {
+        // Get broker URL from configuration
+        const brokerUrl = process.env.BROKER_URL || 'http://localhost:8083';
+        
+        // Make HTTP request to broker's /auth/callback endpoint
+        const response = await fetch(`${brokerUrl}/auth/callback`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                code,
+                codeVerifier,
+                state: 'extension-state' // We'll need to pass the actual state
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Token exchange failed: ${response.statusText}`);
+        }
+
+        const tokens = await response.json() as any;
         return {
-            accessToken: 'mock-access-token',
-            refreshToken: 'mock-refresh-token',
-            expiresIn: 900,
-            tokenType: 'Bearer'
+            accessToken: tokens.access_token,
+            refreshToken: tokens.refresh_token,
+            expiresIn: tokens.expires_in,
+            tokenType: tokens.token_type || 'Bearer'
         };
     }
 
@@ -121,17 +141,17 @@ export class OIDCClient {
         return crypto.randomBytes(16).toString('base64url');
     }
 
-    private buildAuthUrl(codeChallenge: string, state: string): string {
-        const params = new URLSearchParams({
-            response_type: 'code',
-            client_id: 'vscode-extension',
-            redirect_uri: 'http://localhost:3000/callback',
-            scope: 'openid email profile',
-            state,
-            code_challenge: codeChallenge,
-            code_challenge_method: 'S256'
-        });
-
-        return `https://cilogon.org/oauth2/authorize?${params.toString()}`;
+    private async buildAuthUrl(codeChallenge: string, state: string): Promise<string> {
+        // Get broker URL from configuration
+        const brokerUrl = process.env.BROKER_URL || 'http://localhost:8083';
+        
+        // Get auth URL from broker
+        const response = await fetch(`${brokerUrl}/auth/start`);
+        if (!response.ok) {
+            throw new Error(`Failed to get auth URL: ${response.statusText}`);
+        }
+        
+        const data = await response.json() as any;
+        return data.auth_url;
     }
 }

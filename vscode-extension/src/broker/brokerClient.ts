@@ -15,8 +15,8 @@ export class BrokerClient {
     private currentSession?: SessionInfo;
 
     constructor() {
-        const config = vscode.workspace.getConfiguration('jupyterCluster');
-        const brokerUrl = config.get<string>('brokerUrl', 'https://broker.example.org');
+        const config = vscode.workspace.getConfiguration('purdueAf');
+        const brokerUrl = config.get<string>('brokerUrl', 'http://localhost:8083');
 
         this.client = axios.create({
             baseURL: brokerUrl,

@@ -6,7 +6,7 @@ import { TerminalProvider } from './terminal/terminalProvider';
 import { FileSystemProvider } from './filesystem/filesystemProvider';
 
 export function activate(context: vscode.ExtensionContext) {
-    console.log('Jupyter Cluster Connector extension is now active!');
+    console.log('Purdue AF extension is now active!');
 
     // Initialize components
     const oidcClient = new OIDCClient();
@@ -17,12 +17,12 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Status bar item
     const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
-    statusBarItem.text = "$(server) Jupyter Cluster";
-    statusBarItem.command = 'jupyterCluster.connect';
+    statusBarItem.text = "$(server) Purdue AF";
+    statusBarItem.command = 'purdueAf.connect';
     statusBarItem.show();
 
     // Connect command
-    const connectCommand = vscode.commands.registerCommand('jupyterCluster.connect', async () => {
+    const connectCommand = vscode.commands.registerCommand('purdueAf.connect', async () => {
         try {
             statusBarItem.text = "$(loading~spin) Connecting...";
             statusBarItem.command = undefined;
@@ -49,29 +49,29 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.workspace.registerFileSystemProvider('jupyter-cluster', filesystemProvider);
 
             // Update status
-            statusBarItem.text = "$(check) Connected to Jupyter Cluster";
-            statusBarItem.command = 'jupyterCluster.disconnect';
+            statusBarItem.text = "$(check) Connected to Purdue AF";
+            statusBarItem.command = 'purdueAf.disconnect';
             
-            vscode.window.showInformationMessage('Successfully connected to Jupyter Cluster!');
+            vscode.window.showInformationMessage('Successfully connected to Purdue AF!');
 
         } catch (error) {
             statusBarItem.text = "$(error) Connection Failed";
-            statusBarItem.command = 'jupyterCluster.connect';
+            statusBarItem.command = 'purdueAf.connect';
             
-            vscode.window.showErrorMessage(`Failed to connect to Jupyter Cluster: ${error}`);
+            vscode.window.showErrorMessage(`Failed to connect to Purdue AF: ${error}`);
         }
     });
 
     // Disconnect command
-    const disconnectCommand = vscode.commands.registerCommand('jupyterCluster.disconnect', async () => {
+    const disconnectCommand = vscode.commands.registerCommand('purdueAf.disconnect', async () => {
         try {
             await remoteConnection.disconnect();
             await brokerClient.deleteSession();
             
-            statusBarItem.text = "$(server) Jupyter Cluster";
-            statusBarItem.command = 'jupyterCluster.connect';
+            statusBarItem.text = "$(server) Purdue AF";
+            statusBarItem.command = 'purdueAf.connect';
             
-            vscode.window.showInformationMessage('Disconnected from Jupyter Cluster');
+            vscode.window.showInformationMessage('Disconnected from Purdue AF');
         } catch (error) {
             vscode.window.showErrorMessage(`Failed to disconnect: ${error}`);
         }
@@ -83,12 +83,13 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(statusBarItem);
 
     // Auto-connect if configured
-    const config = vscode.workspace.getConfiguration('jupyterCluster');
+    const config = vscode.workspace.getConfiguration('purdueAf');
     if (config.get('autoConnect', false)) {
-        vscode.commands.executeCommand('jupyterCluster.connect');
+        vscode.commands.executeCommand('purdueAf.connect');
     }
 }
 
 export function deactivate() {
-    console.log('Jupyter Cluster Connector extension is now deactivated');
+    console.log('Purdue AF extension is now deactivated');
 }
+
