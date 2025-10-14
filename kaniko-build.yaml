@@ -1,10 +1,10 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: broker-kaniko-build
+  name: purdue-cms-broker-kaniko-build
   namespace: cms-dev
   labels:
-    app: broker-kaniko-build
+    app: purdue-cms-broker-kaniko-build
 spec:
   ttlSecondsAfterFinished: 300  # Clean up after 5 minutes
   template:
@@ -16,10 +16,10 @@ spec:
         args:
         - --context=git://github.com/kondratyevd/purdue-af-vscode.git
         - --context-sub-path=broker
-        - --destination=geddes-registry.rcac.purdue.edu/cms/broker:latest
-        - --destination=geddes-registry.rcac.purdue.edu/cms/broker:v1.0.0
+        - --destination=geddes-registry.rcac.purdue.edu/cms/purdue-cms-broker:latest
+        - --destination=geddes-registry.rcac.purdue.edu/cms/purdue-cms-broker:v1.0.0
         - --cache=true
-        - --cache-repo=geddes-registry.rcac.purdue.edu/cms/broker-cache
+        - --cache-repo=geddes-registry.rcac.purdue.edu/cms/purdue-cms-broker-cache
         - --compressed-caching=false
         - --single-snapshot
         - --cleanup
@@ -36,64 +36,7 @@ spec:
       volumes:
       - name: kaniko-secret
         secret:
-          secretName: kaniko-secret
+          secretName: geddes-registry-secret
           items:
           - key: .dockerconfigjson
             path: config.json
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: kaniko-secret
-  namespace: cms-dev
-type: kubernetes.io/dockerconfigjson
-data:
-  .dockerconfigjson: <BASE64_ENCODED_DOCKER_CONFIG>
----
-# Alternative Kaniko job using local context (if you have the code in a PVC)
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: broker-kaniko-build-local
-  namespace: cms-dev
-  labels:
-    app: broker-kaniko-build-local
-spec:
-  ttlSecondsAfterFinished: 300
-  template:
-    spec:
-      restartPolicy: Never
-      containers:
-      - name: kaniko
-        image: gcr.io/kaniko-project/executor:latest
-        args:
-        - --context=/workspace/broker
-        - --destination=geddes-registry.rcac.purdue.edu/cms/broker:latest
-        - --destination=geddes-registry.rcac.purdue.edu/cms/broker:v1.0.0
-        - --cache=true
-        - --cache-repo=geddes-registry.rcac.purdue.edu/cms/broker-cache
-        - --compressed-caching=false
-        - --single-snapshot
-        - --cleanup
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "500m"
-          limits:
-            memory: "2Gi"
-            cpu: "1000m"
-        volumeMounts:
-        - name: kaniko-secret
-          mountPath: /kaniko/.docker
-        - name: source-code
-          mountPath: /workspace
-      volumes:
-      - name: kaniko-secret
-        secret:
-          secretName: kaniko-secret
-          items:
-          - key: .dockerconfigjson
-            path: config.json
-      - name: source-code
-        persistentVolumeClaim:
-          claimName: broker-source-pvc

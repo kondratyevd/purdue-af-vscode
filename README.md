@@ -38,24 +38,26 @@ Kubernetes Cluster + JupyterHub
    go build -o bin/broker ./cmd/broker
    ```
 
-2. **Configure environment:**
+2. **Build Docker image with Kaniko:**
    ```bash
-   cp ../.env.example .env
-   # Edit .env with your configuration
+   # Create registry secret
+   kubectl create secret docker-registry geddes-registry-secret \
+     --docker-server=geddes-registry.rcac.purdue.edu \
+     --docker-username=YOUR_USERNAME \
+     --docker-password=YOUR_PASSWORD \
+     --docker-email="cms-dev@purdue.edu" \
+     --namespace=cms-dev
+   
+   # Apply Kaniko job
+   kubectl apply -f kaniko-build.yaml
+   
+   # Monitor build
+   kubectl logs -f job/purdue-cms-broker-kaniko-build -n cms-dev
    ```
 
-3. **Run locally:**
+3. **Deploy to Kubernetes:**
    ```bash
-   ./bin/broker
-   ```
-
-4. **Deploy to Kubernetes:**
-   ```bash
-   helm install broker ./charts/broker \
-     --set auth.oidc.clientID=your-client-id \
-     --set auth.oidc.clientSecretName=broker-oidc-secret \
-     --set jupyterhub.apiUrl=https://your-jupyterhub.com/hub/api \
-     --set jupyterhub.apiTokenName=broker-jupyterhub-secret
+   helm install broker ./charts/broker --namespace=cms-dev
    ```
 
 ### Extension Setup

@@ -2,7 +2,7 @@
 replicaCount: 2
 
 image:
-  repository: "geddes-registry.rcac.purdue.edu/cms/broker"
+  repository: "geddes-registry.rcac.purdue.edu/cms/purdue-cms-broker"
   pullPolicy: IfNotPresent
   tag: "v1.0.0"
 

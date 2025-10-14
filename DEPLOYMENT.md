@@ -1,15 +1,6 @@
-# VSCode CILogon Kubernetes Connector - Deployment Guide
+# Deployment Guide
 
-This guide provides step-by-step instructions for deploying the VSCode CILogon Kubernetes Connector in a production environment.
-
-## Prerequisites
-
-- Kubernetes cluster (1.21+)
-- Helm 3.x
-- kubectl configured to access your cluster
-- CILogon OIDC client credentials
-- JupyterHub instance with API access
-- Domain name for the broker service
+Quick deployment guide for the VSCode CILogon Kubernetes Connector.
 
 ## Step 1: Prepare CILogon OIDC Client
 
@@ -40,31 +31,24 @@ This guide provides step-by-step instructions for deploying the VSCode CILogon K
 
 ### Option A: Using Kaniko (Recommended for Kubernetes)
 
-1. **Set up registry credentials:**
+1. **Create registry secret:**
    ```bash
-   # Set environment variables
-   export REGISTRY_USERNAME="your-username"
-   export REGISTRY_PASSWORD="your-password"
-   
-   # Run the build script
-   ./build-kaniko.sh build
-   ```
-
-2. **Manual Kaniko setup:**
-   ```bash
-   # Create registry secret
    kubectl create secret docker-registry geddes-registry-secret \
      --docker-server=geddes-registry.rcac.purdue.edu \
      --docker-username=YOUR_USERNAME \
      --docker-password=YOUR_PASSWORD \
      --docker-email="cms-dev@purdue.edu" \
      --namespace=cms-dev
-   
-   # Apply Kaniko job
+   ```
+
+2. **Apply Kaniko job:**
+   ```bash
    kubectl apply -f kaniko-build.yaml
-   
-   # Monitor build
-   kubectl logs -f job/broker-kaniko-build -n cms-dev
+   ```
+
+3. **Monitor build:**
+   ```bash
+   kubectl logs -f job/purdue-cms-broker-kaniko-build -n cms-dev
    ```
 
 ### Option B: Local Docker Build
@@ -72,12 +56,12 @@ This guide provides step-by-step instructions for deploying the VSCode CILogon K
 1. **Build locally:**
    ```bash
    cd broker
-   docker build -t geddes-registry.rcac.purdue.edu/cms/broker:v1.0.0 .
+   docker build -t geddes-registry.rcac.purdue.edu/cms/purdue-cms-broker:v1.0.0 .
    ```
 
 2. **Push to registry:**
    ```bash
-   docker push geddes-registry.rcac.purdue.edu/cms/broker:v1.0.0
+   docker push geddes-registry.rcac.purdue.edu/cms/purdue-cms-broker:v1.0.0
    ```
 
 ## Step 4: Deploy Broker Service
