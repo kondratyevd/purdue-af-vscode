@@ -36,7 +36,7 @@ spec:
       volumes:
       - name: kaniko-secret
         secret:
-          secretName: geddes-registry-secret
+          secretName: docker-config
           items:
-          - key: .dockerconfigjson
+          - key: config.json
             path: config.json
