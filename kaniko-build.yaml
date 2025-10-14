@@ -1,10 +1,10 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: purdue-cms-broker-kaniko-build
+  name: purdue-af-broker-kaniko-build
   namespace: cms-dev
   labels:
-    app: purdue-cms-broker-kaniko-build
+    app: purdue-af-broker-kaniko-build
 spec:
   ttlSecondsAfterFinished: 300  # Clean up after 5 minutes
   template:
@@ -16,10 +16,10 @@ spec:
         args:
         - --context=git://github.com/kondratyevd/purdue-af-vscode.git
         - --context-sub-path=broker
-        - --destination=geddes-registry.rcac.purdue.edu/cms/purdue-cms-broker:latest
-        - --destination=geddes-registry.rcac.purdue.edu/cms/purdue-cms-broker:v1.0.0
+        - --destination=geddes-registry.rcac.purdue.edu/cms/purdue-af-broker:latest
+        - --destination=geddes-registry.rcac.purdue.edu/cms/purdue-af-broker:v1.0.0
         - --cache=true
-        - --cache-repo=geddes-registry.rcac.purdue.edu/cms/purdue-cms-broker-cache
+        - --cache-repo=geddes-registry.rcac.purdue.edu/cms/purdue-af-broker-cache
         - --compressed-caching=false
         - --single-snapshot
         - --cleanup
