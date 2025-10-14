@@ -44,6 +44,7 @@ yarn-error.log*
 out/
 dist/
 *.vsix
+vscode-extension/out/
 
 # Environment files
 .env
