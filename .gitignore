@@ -134,4 +134,4 @@ temp/
 
 # Helm
 charts/*/charts/
-charts/*/requirements.lock
+charts/*/requirements.lockbroker/broker
