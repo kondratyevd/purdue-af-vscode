@@ -46,3 +46,5 @@ mocks:
 	mockgen -source=internal/k8s/client.go -destination=internal/k8s/mocks/client_mock.go
 	mockgen -source=internal/jupyterhub/client.go -destination=internal/jupyterhub/mocks/client_mock.go
 	mockgen -source=internal/tunnel/manager.go -destination=internal/tunnel/mocks/manager_mock.go
+
+
