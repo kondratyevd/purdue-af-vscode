@@ -1,0 +1,17 @@
+apiVersion: v2
+name: broker
+description: VSCode CILogon Kubernetes Connector Broker
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - vscode
+  - kubernetes
+  - jupyterhub
+  - cilogon
+home: https://github.com/purdue-af/vscode-k8s-connector
+sources:
+  - https://github.com/purdue-af/vscode-k8s-connector
+maintainers:
+  - name: Purdue AF Team
+    email: team@purdue.edu

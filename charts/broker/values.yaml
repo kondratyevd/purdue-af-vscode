@@ -1,0 +1,94 @@
+# Default values for broker
+replicaCount: 2
+
+image:
+  repository: ""
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  fsGroup: 2000
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: broker.example.org
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: broker-tls
+      hosts:
+        - broker.example.org
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Configuration
+config:
+  listenAddr: ":8080"
+  sessionTTL: "24h"
+  jwtSecret: "change-me-in-production"
+
+# Authentication configuration
+auth:
+  oidc:
+    issuer: "https://cilogon.org"
+    clientID: ""
+    clientSecretName: "broker-oidc-secret"
+    redirectURL: "https://broker.example.org/auth/callback"
+
+# JupyterHub configuration
+jupyterhub:
+  apiUrl: ""
+  apiTokenName: "broker-jupyterhub-secret"
+
+# Kubernetes configuration
+k8s:
+  kubeconfigPath: ""  # Use in-cluster config if empty
