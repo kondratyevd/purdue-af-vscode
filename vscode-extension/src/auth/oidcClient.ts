@@ -1,7 +1,8 @@
 import * as crypto from 'crypto';
 import * as express from 'express';
 import { Server } from 'http';
-import fetch from 'node-fetch';
+import * as https from 'https';
+import * as http from 'http';
 
 export interface TokenSet {
     accessToken: string;
@@ -101,32 +102,55 @@ export class OIDCClient {
 
     private async exchangeCodeForTokens(code: string, codeVerifier: string): Promise<TokenSet> {
         // Get broker URL from configuration
-        const brokerUrl = process.env.BROKER_URL || 'http://localhost:8083';
-        
-        // Make HTTP request to broker's /auth/callback endpoint
-        const response = await fetch(`${brokerUrl}/auth/callback`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
+        const brokerUrl = process.env.BROKER_URL || 'http://localhost:8084';
+
+        return new Promise((resolve, reject) => {
+            const url = new URL(`${brokerUrl}/auth/callback`);
+            const postData = JSON.stringify({
                 code,
                 codeVerifier,
-                state: 'extension-state' // We'll need to pass the actual state
-            })
+                state: 'extension-state'
+            });
+
+            const options = {
+                hostname: url.hostname,
+                port: url.port || (url.protocol === 'https:' ? 443 : 80),
+                path: url.pathname,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Content-Length': Buffer.byteLength(postData)
+                }
+            };
+
+            const client = url.protocol === 'https:' ? https : http;
+            const req = client.request(options, (res) => {
+                let data = '';
+                res.on('data', (chunk) => {
+                    data += chunk;
+                });
+                res.on('end', () => {
+                    try {
+                        const tokens = JSON.parse(data);
+                        resolve({
+                            accessToken: tokens.access_token,
+                            refreshToken: tokens.refresh_token,
+                            expiresIn: tokens.expires_in,
+                            tokenType: tokens.token_type || 'Bearer'
+                        });
+                    } catch (error) {
+                        reject(new Error(`Failed to parse response: ${error}`));
+                    }
+                });
+            });
+
+            req.on('error', (error) => {
+                reject(new Error(`Token exchange failed: ${error.message}`));
+            });
+
+            req.write(postData);
+            req.end();
         });
-
-        if (!response.ok) {
-            throw new Error(`Token exchange failed: ${response.statusText}`);
-        }
-
-        const tokens = await response.json() as any;
-        return {
-            accessToken: tokens.access_token,
-            refreshToken: tokens.refresh_token,
-            expiresIn: tokens.expires_in,
-            tokenType: tokens.token_type || 'Bearer'
-        };
     }
 
     private generateCodeVerifier(): string {
@@ -143,15 +167,39 @@ export class OIDCClient {
 
     private async buildAuthUrl(codeChallenge: string, state: string): Promise<string> {
         // Get broker URL from configuration
-        const brokerUrl = process.env.BROKER_URL || 'http://localhost:8083';
-        
-        // Get auth URL from broker
-        const response = await fetch(`${brokerUrl}/auth/start`);
-        if (!response.ok) {
-            throw new Error(`Failed to get auth URL: ${response.statusText}`);
-        }
-        
-        const data = await response.json() as any;
-        return data.auth_url;
+        const brokerUrl = process.env.BROKER_URL || 'http://localhost:8084';
+
+        return new Promise((resolve, reject) => {
+            const url = new URL(`${brokerUrl}/auth/start`);
+            
+            const options = {
+                hostname: url.hostname,
+                port: url.port || (url.protocol === 'https:' ? 443 : 80),
+                path: url.pathname,
+                method: 'GET'
+            };
+
+            const client = url.protocol === 'https:' ? https : http;
+            const req = client.request(options, (res) => {
+                let data = '';
+                res.on('data', (chunk) => {
+                    data += chunk;
+                });
+                res.on('end', () => {
+                    try {
+                        const response = JSON.parse(data);
+                        resolve(response.auth_url);
+                    } catch (error) {
+                        reject(new Error(`Failed to parse auth URL response: ${error}`));
+                    }
+                });
+            });
+
+            req.on('error', (error) => {
+                reject(new Error(`Failed to get auth URL: ${error.message}`));
+            });
+
+            req.end();
+        });
     }
 }
