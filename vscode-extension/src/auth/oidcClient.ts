@@ -120,7 +120,8 @@ export class OIDCClient {
                 headers: {
                     'Content-Type': 'application/json',
                     'Content-Length': Buffer.byteLength(postData)
-                }
+                },
+                rejectUnauthorized: false
             };
 
             const client = url.protocol === 'https:' ? https : http;
@@ -176,7 +177,8 @@ export class OIDCClient {
                 hostname: url.hostname,
                 port: url.port || (url.protocol === 'https:' ? 443 : 80),
                 path: url.pathname,
-                method: 'GET'
+                method: 'GET',
+                rejectUnauthorized: false
             };
 
             const client = url.protocol === 'https:' ? https : http;
