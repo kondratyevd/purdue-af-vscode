@@ -44,7 +44,7 @@
       "properties": {
         "purdueAf.brokerUrl": {
           "type": "string",
-          "default": "http://localhost:8084",
+          "default": "https://purdue-af-broker.geddes.rcac.purdue.edu",
           "description": "URL of the broker service"
         },
         "purdueAf.autoConnect": {
