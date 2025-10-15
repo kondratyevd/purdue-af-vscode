@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import * as vscode from 'vscode';
+import * as https from 'https';
 
 export interface SessionInfo {
     sessionId: string;
@@ -23,7 +24,10 @@ export class BrokerClient {
             timeout: 30000,
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            httpsAgent: new https.Agent({
+                rejectUnauthorized: false
+            })
         });
     }
 
