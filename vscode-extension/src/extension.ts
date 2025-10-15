@@ -40,6 +40,7 @@ async function connectToBroker(): Promise<void> {
         
         // Simple HTTP request using Node.js built-ins
         const http = require('http');
+        const https = require('https');
         const url = require('url');
         
         const parsedUrl = url.parse(healthUrl);
@@ -48,11 +49,14 @@ async function connectToBroker(): Promise<void> {
             port: parsedUrl.port,
             path: parsedUrl.path,
             method: 'GET',
-            timeout: 5000
+            timeout: 5000,
+            rejectUnauthorized: false
         };
         
+        const client = parsedUrl.protocol === 'https:' ? https : http;
+        
         await new Promise<void>((resolve, reject) => {
-            const req = http.request(options, (res: any) => {
+            const req = client.request(options, (res: any) => {
                 if (res.statusCode === 200) {
                     console.log('Broker health check successful');
                     resolve();
@@ -85,11 +89,14 @@ async function connectToBroker(): Promise<void> {
             port: authParsedUrl.port,
             path: authParsedUrl.path,
             method: 'GET',
-            timeout: 10000
+            timeout: 10000,
+            rejectUnauthorized: false
         };
         
+        const authClient = authParsedUrl.protocol === 'https:' ? https : http;
+        
         const authResponse = await new Promise<string>((resolve, reject) => {
-            const req = http.request(authOptions, (res: any) => {
+            const req = authClient.request(authOptions, (res: any) => {
                 let data = '';
                 res.on('data', (chunk: any) => data += chunk);
                 res.on('end', () => {
