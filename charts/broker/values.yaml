@@ -4,7 +4,7 @@ replicaCount: 2
 image:
   repository: "geddes-registry.rcac.purdue.edu/cms/purdue-af-broker"
   pullPolicy: IfNotPresent
-  tag: "v1.0.1"
+  tag: "v1.0.2"
 
 imagePullSecrets:
   - name: docker-config
@@ -36,7 +36,7 @@ service:
 
 ingress:
   enabled: true
-  className: "nginx"
+  className: "public"
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
