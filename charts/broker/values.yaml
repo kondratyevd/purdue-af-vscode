@@ -9,7 +9,7 @@ image:
 imagePullSecrets:
   - name: docker-config
 nameOverride: ""
-fullnameOverride: ""
+fullnameOverride: "purdue-af-broker"
 
 serviceAccount:
   create: true
@@ -39,16 +39,15 @@ ingress:
   className: "public"
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
   hosts:
-    - host: purdue-af-broker.rcac.purdue.edu
+    - host: purdue-af-broker.geddes.rcac.purdue.edu
       paths:
         - path: /
           pathType: Prefix
   tls:
     - secretName: broker-tls
       hosts:
-        - purdue-af-broker.rcac.purdue.edu
+        - purdue-af-broker.geddes.rcac.purdue.edu
 
 resources:
   limits:
@@ -81,12 +80,12 @@ config:
 auth:
   oidc:
     issuer: "https://cilogon.org"
-    clientSecretName: "auth-secret-temp-from-cms"  # TEMPORARY: Copy of auth-secret from cms namespace
-    redirectURL: "https://purdue-af-broker.rcac.purdue.edu/auth/callback"
+    clientSecretName: "auth-secret"  # Use actual auth-secret from cms namespace
+    redirectURL: "https://purdue-af-broker.geddes.rcac.purdue.edu/auth/callback"
 
 # JupyterHub configuration
 jupyterhub:
-  apiUrl: "http://hub.cms-dev.svc.cluster.local:8081"
+  apiUrl: "http://hub.cms.svc.cluster.local:8081"
   apiTokenName: "broker-jupyterhub-secret"
 
 # Kubernetes configuration
