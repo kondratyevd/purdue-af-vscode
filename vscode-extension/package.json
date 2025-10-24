@@ -2,7 +2,7 @@
   "name": "purdue-af",
   "displayName": "Purdue AF",
   "description": "Connect to Purdue AF JupyterHub pods with flexible authentication options",
-  "version": "0.1.0",
+  "version": "0.4.1",
   "publisher": "purdue-af",
   "repository": {
     "type": "git",
@@ -78,7 +78,7 @@
     "@vscode/vsce": "^2.32.0",
     "eslint": "^8.28.0",
     "typescript": "^4.9.4",
+    "undici": "^6.19.0",
     "vsce": "^1.95.0"
-  },
-  "dependencies": {}
+  }
 }
