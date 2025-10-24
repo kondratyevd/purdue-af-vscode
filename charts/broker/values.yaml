@@ -81,7 +81,9 @@ auth:
   oidc:
     issuer: "https://cilogon.org"
     clientSecretName: "auth-secret"  # Use actual auth-secret from cms namespace
-    redirectURL: "https://purdue-af-broker.geddes.rcac.purdue.edu/auth/callback"
+    # redirectURL: "https://purdue-af-broker.geddes.rcac.purdue.edu/auth/callback"
+    redirectURL: "https://cms.geddes.rcac.purdue.edu/hub/oauth_callback"
+
 
 # JupyterHub configuration
 jupyterhub:
