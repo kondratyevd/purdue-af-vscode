@@ -135,4 +135,18 @@ temp/
 
 # Helm
 charts/*/charts/
-charts/*/requirements.lockbroker/broker
+charts/*/requirements.lock
+
+# VS Code Extension specific
+vscode-extension/*.vsix
+vscode-extension/package-lock.json
+
+# Go specific
+broker/bin/
+broker/*.exe
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup

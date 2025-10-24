@@ -1,0 +1,13 @@
+node_modules
+.git
+.vscode
+tests
+README.md
+.eslintrc.js
+webpack.config.js
+tsconfig.json
+src/**
+*.map
+.DS_Store
+*.log
+

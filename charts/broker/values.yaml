@@ -84,7 +84,6 @@ auth:
     # redirectURL: "https://purdue-af-broker.geddes.rcac.purdue.edu/auth/callback"
     redirectURL: "https://cms.geddes.rcac.purdue.edu/hub/oauth_callback"
 
-
 # JupyterHub configuration
 jupyterhub:
   apiUrl: "http://hub.cms.svc.cluster.local:8081"

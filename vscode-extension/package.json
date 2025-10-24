@@ -1,9 +1,13 @@
 {
   "name": "purdue-af",
   "displayName": "Purdue AF",
-  "description": "Connect to JupyterHub-managed Kubernetes pods via CILogon authentication",
+  "description": "Connect to Purdue AF JupyterHub pods with flexible authentication options",
   "version": "0.1.0",
   "publisher": "purdue-af",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/purdue-af/vscode-k8s-connector.git"
+  },
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -11,7 +15,8 @@
     "Other"
   ],
   "activationEvents": [
-    "*"
+    "onCommand:purdueAf.connect",
+    "onCommand:purdueAf.disconnect"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -75,11 +80,5 @@
     "typescript": "^4.9.4",
     "vsce": "^1.95.0"
   },
-  "dependencies": {
-    "@types/express": "^4.17.0",
-    "@types/ws": "^8.5.0",
-    "axios": "^1.6.0",
-    "express": "^4.18.0",
-    "ws": "^8.14.0"
-  }
+  "dependencies": {}
 }
